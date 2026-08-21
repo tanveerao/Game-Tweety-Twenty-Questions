@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
 from .. import config, game_state, persona
 
@@ -79,6 +80,30 @@ def render():
     with st.container(height=420):
         for entry in st.session_state.get("log", []):
             _render_log_entry(entry)
+
+    # st.container(height=...) doesn't auto-scroll on rerun, so a new entry
+    # lands below the fold until the player manually scrolls. Force it to
+    # the bottom after every render; the log-length comment changes the
+    # embedded content each time so the iframe actually reloads and reruns
+    # the script instead of being skipped as unchanged.
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            const doc = window.parent.document;
+            const blocks = doc.querySelectorAll('[data-testid="stVerticalBlock"]');
+            for (const el of blocks) {{
+                const style = window.parent.getComputedStyle(el);
+                if (style.overflowY === 'auto' || style.overflowY === 'scroll') {{
+                    el.scrollTop = el.scrollHeight;
+                }}
+            }}
+        }})();
+        </script>
+        <!-- log-length:{len(st.session_state.get('log', []))} -->
+        """,
+        height=0,
+    )
 
     if st.session_state.pending_confirm is not None:
         _render_confirm_bar()
