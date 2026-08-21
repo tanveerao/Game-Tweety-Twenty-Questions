@@ -15,7 +15,9 @@ monetization plans (Tweety Bird is Warner Bros. Discovery IP).
 git clone https://github.com/tanveerao/Game-Twenty-questions.git
 cd Game-Twenty-questions
 python -m venv venv && source venv/bin/activate   # optional but recommended
-pip install -r requirements.txt
+python -m pip install -r requirements.txt   # use "python -m pip", not bare "pip" -- many
+                                             # setups (e.g. Windows Python from python.org)
+                                             # don't put a standalone `pip` on PATH
 
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 # then edit .streamlit/secrets.toml and paste in your real ANTHROPIC_API_KEY
