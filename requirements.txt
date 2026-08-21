@@ -1,0 +1,3 @@
+streamlit>=1.59
+anthropic>=0.116
+requests>=2.31
