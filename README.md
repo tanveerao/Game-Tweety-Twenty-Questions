@@ -69,6 +69,12 @@ deploy but are fine leaving it open.
   the dossier doesn't cover a question, exactly one live web search is allowed before
   falling back to "don't know." Nothing is ever answered from the model's general
   knowledge — only from the dossier or a live search.
+- **Preset pool (speed).** That research pass is the slow part (often 30s–a few minutes).
+  `data/preset_pool.json` holds ~30 well-known names with dossiers pre-built offline by
+  `scripts/build_preset_pool.py` using that exact same pipeline. "Let Tweety pick" draws
+  from this pool first (near-instant) and only falls back to live generation once a
+  session has used up every preset entry; typing a name that happens to match a preset
+  entry is instant too. Rerun the script any time to add more names to the pool.
 - **Turns.** You have a shared budget of 20 turns. Yes/no questions and guesses (right or
   wrong) both cost a turn; "not yes/no," "don't know," and off-limits responses (including
   attempts to extract the identity directly) are free and don't count.
@@ -82,6 +88,10 @@ deploy but are fine leaving it open.
 
 ```
 app.py                 entrypoint / screen router
+data/
+  preset_pool.json       pre-built (name, dossier) pairs -- see scripts/build_preset_pool.py
+scripts/
+  build_preset_pool.py    offline, rerunnable builder for data/preset_pool.json
 src/
   config.py             constants: turn budget, thresholds, model IDs
   persona.py             all Tweety-voiced copy, centralized
@@ -117,7 +127,10 @@ Noted here as possible future features, not implemented:
   across different fictional continuities are all realistic failure points. The
   dossier-first architecture and "don't know" fallback reduce this risk but don't
   eliminate it.
-- **Latency.** The upfront research pass and any live-search fallback will visibly take a
-  few seconds.
+- **Latency.** Names in the preset pool (see above) start almost instantly. A name that
+  isn't in the pool — an arbitrary typed name in Path A, or Path B once the pool is
+  exhausted for the session — still triggers the live research pass, which has measured
+  anywhere from ~30 seconds to a couple of minutes depending on the subject. Any live
+  search fallback mid-round adds a similar delay for that one answer.
 - **Trademark/IP.** Tweety Bird is Warner Bros. Discovery IP; this project makes no claim
   to it and has no monetization plans.

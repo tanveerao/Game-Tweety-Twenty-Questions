@@ -7,12 +7,39 @@ directly for anything beyond simple widget bindings, and rather than
 calling wikipedia.py / claude_client.py directly.
 """
 
+import json
 import random
+from pathlib import Path
 
 import requests
 import streamlit as st
 
 from . import claude_client, config, persona, wikipedia
+
+_PRESET_POOL_PATH = Path(__file__).resolve().parent.parent / "data" / "preset_pool.json"
+_preset_pool_cache = None
+
+
+def _load_preset_pool() -> list[dict]:
+    """Pre-researched (name, dossier) pairs built offline by
+    scripts/build_preset_pool.py, used to skip live research latency for
+    well-known names. Missing file just means an empty pool -- both Path A
+    and Path B fall back to live research as if it were never there."""
+    global _preset_pool_cache
+    if _preset_pool_cache is None:
+        if _PRESET_POOL_PATH.exists():
+            _preset_pool_cache = json.loads(_PRESET_POOL_PATH.read_text(encoding="utf-8"))
+        else:
+            _preset_pool_cache = []
+    return _preset_pool_cache
+
+
+def _preset_dossier_for(title: str) -> dict | None:
+    title_lower = title.strip().lower()
+    for entry in _load_preset_pool():
+        if entry["name"].strip().lower() == title_lower:
+            return entry["dossier"]
+    return None
 
 
 class GameError(Exception):
@@ -60,6 +87,9 @@ def check_candidate_title(title: str) -> dict:
 
 
 def _build_dossier(title: str, extract: str) -> dict:
+    preset = _preset_dossier_for(title)
+    if preset is not None:
+        return preset
     notes = _wrap_errors(claude_client.dossier_research, title, extract)
     dossier = _wrap_errors(claude_client.structure_dossier, title, notes)
     return dossier
@@ -85,9 +115,22 @@ def _start_round(dossier: dict, fallback_name: str, path: str):
 
 
 def choose_for_player(age_range: str, region: str) -> bool:
-    """Path B: generate + resolve a candidate, retrying the pool once if it
-    fully exhausts. Returns True on success, False if both pools exhausted."""
+    """Path B: prefer an instant pick from the pre-researched preset pool
+    (ignores age_range/region -- every preset entry is broadly famous
+    enough to fit any audience); once the preset pool is used up for this
+    session, fall back to the original live generate-and-fame-check
+    pipeline, retrying once if that also fully exhausts. Returns True on
+    success, False if the live fallback also exhausts."""
     used = st.session_state.used_names_b
+
+    preset_pool = _load_preset_pool()
+    unused_preset = [e for e in preset_pool if e["name"] not in used]
+    if unused_preset:
+        entry = random.choice(unused_preset)
+        used.add(entry["name"])
+        _start_round(entry["dossier"], entry["name"], "B")
+        return True
+
     for _attempt in range(config.MAX_POOL_REGENERATIONS + 1):
         pool = _wrap_errors(
             claude_client.generate_candidate_pool, age_range, region, list(used)
