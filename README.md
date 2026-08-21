@@ -1,3 +1,5 @@
+#Current status: Work in progress, latency issues at initial Name Picking phase
+
 # Tweety's Twenty Questions
 
 A web-based, LLM-powered game of 20 Questions. A well-known real person or fictional
