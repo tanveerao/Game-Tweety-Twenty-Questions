@@ -25,7 +25,13 @@ class ClaudeError(Exception):
 def get_client() -> anthropic.Anthropic:
     global _client
     if _client is None:
-        _client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+        api_key = st.secrets.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise ClaudeError(
+                "ANTHROPIC_API_KEY isn't set. Add it to .streamlit/secrets.toml "
+                "locally, or to the app's Settings -> Secrets panel if deployed."
+            )
+        _client = anthropic.Anthropic(api_key=api_key)
     return _client
 
 
