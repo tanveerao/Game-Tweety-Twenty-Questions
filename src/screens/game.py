@@ -25,6 +25,11 @@ def _render_log_entry(entry):
         st.error(label)
     else:
         st.info(label)
+        # ASK_AGAIN/OFF_LIMITS/DONT_KNOW never confirm or deny anything about
+        # the identity, so unlike YES/NO there's no leak risk in showing the
+        # explanation -- and without it, a bare "NOT YES/NO" tag is unclear.
+        if entry.get("note"):
+            st.caption(entry["note"])
 
 
 def _render_confirm_bar():
