@@ -153,14 +153,16 @@ def choose_for_player(age_range: str, region: str) -> bool:
 # Log helpers
 # ---------------------------------------------------------------------------
 
-def _next_display_number() -> int:
-    return 1 + sum(1 for e in st.session_state.log if e["kind"] in ("qa", "guess"))
-
-
 def _append_qa(text: str, classification: str, note: str, counted: bool):
+    # Numbered only when it actually consumes a turn, using the turn it's
+    # about to become -- so the highest number in the log always equals
+    # the header's turns-used count. Free entries (ASK_AGAIN/OFF_LIMITS/
+    # DONT_KNOW) get no number, same as Hint, since they'd otherwise drift
+    # out of sync with the turn counter and confuse "which turn is this".
+    number = st.session_state.turns_used + 1 if counted else None
     st.session_state.log.append({
         "kind": "qa",
-        "number": _next_display_number(),
+        "number": number,
         "text": text,
         "classification": classification,
         "result_label": persona.RESULT_LABELS[classification],
@@ -173,7 +175,7 @@ def _append_guess(text: str, is_match: bool):
     classification = "GUESS_RIGHT" if is_match else "GUESS_WRONG"
     st.session_state.log.append({
         "kind": "guess",
-        "number": _next_display_number(),
+        "number": st.session_state.turns_used + 1,  # guesses always count
         "text": text,
         "classification": classification,
         "result_label": persona.RESULT_LABELS[classification],

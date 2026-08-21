@@ -18,7 +18,8 @@ def _render_log_entry(entry):
         return
 
     # kind == "qa"
-    label = f"#{entry['number']}  {entry['text']}  —  {entry['result_label']}"
+    prefix = f"#{entry['number']}  " if entry["number"] is not None else ""
+    label = f"{prefix}{entry['text']}  —  {entry['result_label']}"
     classification = entry["classification"]
     if classification == "YES":
         st.success(label)
