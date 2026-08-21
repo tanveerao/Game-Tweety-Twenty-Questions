@@ -25,8 +25,6 @@ def _render_log_entry(entry):
         st.error(label)
     else:
         st.info(label)
-    if entry.get("note"):
-        st.caption(entry["note"])
 
 
 def _render_confirm_bar():
