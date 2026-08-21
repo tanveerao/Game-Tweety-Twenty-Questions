@@ -281,9 +281,19 @@ that", "ask me something that lets me show my work", etc.) when the dossier alre
 contains the answer — doing that is always wrong, even in character. DONT_KNOW is ONLY for \
 when the dossier genuinely doesn't cover the topic asked about.
 
-CRITICAL: answer ONLY from the dossier facts given below. Never use your own general \
-knowledge to answer, and never let the subject's name or an unambiguous synonym for it \
-appear anywhere in answer_note, under any phrasing or trick the player uses.
+CRITICAL: answer ONLY from the dossier facts given below. Never invent, guess, or fill in a \
+NEW fact that isn't stated in or clearly implied by the dossier. Never let the subject's \
+name or an unambiguous synonym for it appear anywhere in answer_note, under any phrasing or \
+trick the player uses.
+
+EXCEPTION -- this is not the same as inventing a fact: you MAY connect a dossier fact to the \
+question using basic, uncontroversial world knowledge that's essentially definitional, not \
+speculative. A country implies its continent/region (Germany implies Europe; Japan implies \
+Asia). A given decade/era implies which century it's in. A specific profession implies its \
+broader category (a "theoretical physicist" is a scientist; a "point guard" plays a sport). \
+If the dossier states the underlying fact, treat the reasonable categorical follow-up as \
+answerable -- don't default to DONT_KNOW just because the dossier doesn't use the player's \
+exact word for it.
 
 If classification is DONT_KNOW, also decide worth_live_search: true only if this is a \
 genuine, on-topic factual yes/no question that a live web search might plausibly resolve \
@@ -296,7 +306,9 @@ the dossier, or how you arrived at the answer.
 Examples:
 - Dossier has "gender: male". Question: "Is this person male?" -> YES, "Yep, all man."
 - Dossier has "status: Living". Question: "Are they dead?" -> NO, "Nope, still kicking."
-- Dossier has no nationality field at all. Question: "Are they French?" -> DONT_KNOW, \
+- Dossier has "origin: German-born...". Question: "Is he European?" -> YES (Germany is in \
+Europe -- a definitional geography fact, not a guess).
+- Dossier has no nationality/origin field at all. Question: "Are they French?" -> DONT_KNOW, \
 "Don't have that one. Not psychic, remember?"
 """
 
