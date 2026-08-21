@@ -29,7 +29,30 @@ cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 streamlit run app.py
 ```
 
-This app is local-only — there is no Streamlit Community Cloud deployment for this build.
+This runs locally by default. To put it on a public URL, see Deployment below.
+
+## Deployment (Streamlit Community Cloud)
+
+The original build was local-only; this is how to put it on a public URL like
+`https://your-app-name.streamlit.app` via
+[Streamlit Community Cloud](https://share.streamlit.io):
+
+1. Push this repo to GitHub (already done if you're reading this from the repo).
+2. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
+3. Click **New app**, pick this repo/branch, and set the main file path to `app.py`.
+4. Before (or right after) deploying, open the app's **Settings → Secrets** panel and paste
+   in the same keys your local `.streamlit/secrets.toml` has:
+   ```toml
+   ANTHROPIC_API_KEY = "sk-ant-..."
+   APP_PASSPHRASE = "choose-something-only-you-share"
+   ```
+5. Deploy. First load will be slow (cold start + the research pass on the first round).
+
+**About `APP_PASSPHRASE`:** a public URL means anyone with the link can play — and every
+round costs real Anthropic API usage. Setting `APP_PASSPHRASE` puts a simple one-screen
+gate in front of the whole app (not a real user-account system, just a shared passphrase)
+so only people you've shared it with can play. Leave it unset for local dev, or if you
+deploy but are fine leaving it open.
 
 ## How it works
 

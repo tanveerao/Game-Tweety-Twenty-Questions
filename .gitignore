@@ -26,5 +26,8 @@ Thumbs.db
 .env
 .env.*
 
+# Local run logs
+*.log
+
 # Original PRD source doc (kept locally, not needed by the app)
 Game-Tweetys-Twenty-Questions-PRD.md.docx

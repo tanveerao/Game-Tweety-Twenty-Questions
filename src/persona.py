@@ -4,6 +4,10 @@ in one place. All lines are original — written in the spirit of the
 character, not quoted from any scripted source.
 """
 
+GATE_PROMPT = "Not so fast. What's the password?"
+GATE_SUBMIT = "Enter"
+GATE_WRONG = "Nope. Try again, genius."
+
 LANDING_INSTRUCTIONS = [
     "Alright. Listen close, I'm only saying this once.",
     "Twenty turns. That's it. That's all the patience I've got.",
